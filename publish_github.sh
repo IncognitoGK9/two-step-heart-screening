@@ -27,7 +27,10 @@ git -c user.name="${GIT_AUTHOR_NAME:-$(git config user.name || echo author)}" -c
     commit -q -m "Two-step heart disease screening: pipeline, app, tests, results and paper" || echo "(nothing new to commit)"
 echo "Repository prepared at: $DEST  ($(git ls-files | wc -l | tr -d ' ') files)"
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  USER_LOGIN="$(gh api user --jq .login)"
   if git remote get-url origin >/dev/null 2>&1; then git push -u origin main
+  elif gh repo view "$USER_LOGIN/$NAME" >/dev/null 2>&1; then   # repository already exists (for example created empty on github.com)
+    git remote add origin "https://github.com/$USER_LOGIN/$NAME.git"; git push -u origin main
   else gh repo create "$NAME" $VIS --source . --remote origin --push; fi
   echo "Done: $(gh repo view --json url --jq .url)"
 else
