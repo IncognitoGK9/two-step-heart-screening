@@ -1,0 +1,22 @@
+{
+  "best_method_rule": "highest mean outer-CV accuracy, F_raw; <0.1 point gap broken by AUROC",
+  "best_method": "SOFT",
+  "cholesterol_auroc_gain_stack": 0.005441575003985233,
+  "step1_config": "A_nochol",
+  "step1_rule": "A_chol only if it raises STACK AUROC by >= 0.01, else A_nochol",
+  "proposed_model": "STACK",
+  "proposed_rule": "STACK if its inner out-of-fold AUROC (F_imp) >= best single model, else best single",
+  "oof_auc_F_imp": {
+    "DT": 0.8949,
+    "GBM": 0.922,
+    "KNN": 0.9128,
+    "LR": 0.9215,
+    "MLP": 0.9174,
+    "RF": 0.9226,
+    "SOFT": 0.9275,
+    "STACK": 0.9246,
+    "SVM": 0.9207
+  },
+  "mechanism": "two-threshold (empirical)",
+  "mechanism_rule": "both class coverages >= 0.94; smaller Step 1 not-sure share; tie (<0.5 point) -> two-threshold"
+}

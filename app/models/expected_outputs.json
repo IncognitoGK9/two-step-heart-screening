@@ -1,0 +1,132 @@
+[
+ {
+  "row": 692,
+  "inputs": {
+   "Age": 39,
+   "Sex": "F",
+   "ChestPainType": "NAP",
+   "RestingBP": 94,
+   "Cholesterol": 199,
+   "FastingBS": 0,
+   "RestingECG": "Normal",
+   "MaxHR": 179,
+   "ExerciseAngina": "N",
+   "Oldpeak": 0.0,
+   "ST_Slope": "Up"
+  },
+  "step1": {
+   "label": "Low risk",
+   "q_source": 0.041366,
+   "risk_target": 0.00183
+  },
+  "step2": {
+   "label": "Low risk",
+   "q_source": 0.020486,
+   "risk_target": 0.000888
+  }
+ },
+ {
+  "row": 439,
+  "inputs": {
+   "Age": 74,
+   "Sex": "M",
+   "ChestPainType": "NAP",
+   "RestingBP": 138,
+   "Cholesterol": 0,
+   "FastingBS": 0,
+   "RestingECG": "Normal",
+   "MaxHR": 116,
+   "ExerciseAngina": "N",
+   "Oldpeak": 0.2,
+   "ST_Slope": "Up"
+  },
+  "step1": {
+   "label": "Not sure",
+   "q_source": 0.606794,
+   "risk_target": 0.06152
+  },
+  "step2": {
+   "label": "Not sure",
+   "q_source": 0.153404,
+   "risk_target": 0.007638
+  }
+ },
+ {
+  "row": 112,
+  "inputs": {
+   "Age": 47,
+   "Sex": "M",
+   "ChestPainType": "ASY",
+   "RestingBP": 140,
+   "Cholesterol": 276,
+   "FastingBS": 1,
+   "RestingECG": "Normal",
+   "MaxHR": 125,
+   "ExerciseAngina": "Y",
+   "Oldpeak": 0.0,
+   "ST_Slope": "Up"
+  },
+  "step1": {
+   "label": "High risk",
+   "q_source": 0.853833,
+   "risk_target": 0.198806
+  },
+  "step2": {
+   "label": "Not sure",
+   "q_source": 0.681258,
+   "risk_target": 0.083233
+  }
+ },
+ {
+  "row": 479,
+  "inputs": {
+   "Age": 56,
+   "Sex": "M",
+   "ChestPainType": "NAP",
+   "RestingBP": 170,
+   "Cholesterol": 0,
+   "FastingBS": 0,
+   "RestingECG": "LVH",
+   "MaxHR": 123,
+   "ExerciseAngina": "Y",
+   "Oldpeak": 2.5,
+   "ST_Slope": "Flat"
+  },
+  "step1": {
+   "label": "Not sure",
+   "q_source": 0.493528,
+   "risk_target": 0.039747
+  },
+  "step2": {
+   "label": "Not sure",
+   "q_source": 0.88085,
+   "risk_target": 0.238984
+  }
+ },
+ {
+  "row": 369,
+  "inputs": {
+   "Age": 63,
+   "Sex": "M",
+   "ChestPainType": "ASY",
+   "RestingBP": 150,
+   "Cholesterol": 0,
+   "FastingBS": 0,
+   "RestingECG": "Normal",
+   "MaxHR": 86,
+   "ExerciseAngina": "Y",
+   "Oldpeak": 2.0,
+   "ST_Slope": "Flat"
+  },
+  "step1": {
+   "label": "High risk",
+   "q_source": 0.890945,
+   "risk_target": 0.257627
+  },
+  "step2": {
+   "label": "High risk",
+   "q_source": 0.975092,
+   "risk_target": 0.624476
+  }
+ }
+]

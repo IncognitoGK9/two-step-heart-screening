@@ -1,0 +1,11 @@
+run started 2026-10-26 22:14:00 | args: ['--export-only']
+python 3.12.11 | scikit-learn 1.9.1 | pandas 3.1.0 | numpy 2.5.4 | scipy 1.18.1 | matplotlib 3.11.2 | joblib 1.6.0
+cpu cores: 12 | platform: macOS-27.0.1-arm64-arm-64bit
+
+=== 06_export_models.py ===
+step1: config A_nochol, thresholds tl_e95=0.282, tl_e98=0.161, th_e95=0.826 (5s)
+step2: config F_imp, thresholds tl_e95=0.292, tl_e98=0.115, th_e95=0.888 (3s)
+saved -> /Users/incognito/hf_run/app/models
+--- 06_export_models.py finished in 10s
+
+All done in 10s. See results/summary.md and figures/.
