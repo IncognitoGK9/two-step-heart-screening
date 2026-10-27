@@ -4,6 +4,7 @@
 # Needs: git, rsync. Needs the GitHub CLI (gh, already logged in) to create the repo; without it the script stops after the
 # commit and prints the manual commands. The repo is PRIVATE unless you pass --public.
 set -e
+# The commit uses the GitHub no-reply address, because GitHub blocks pushes that expose a private email.
 NAME="two-step-heart-screening"; VIS="--private"
 for a in "$@"; do case "$a" in --public) VIS="--public";; *) NAME="$a";; esac; done
 SRC="$(cd "$(dirname "$0")" && pwd)"
@@ -23,7 +24,7 @@ __pycache__/
 GI
 [ -d .git ] || git init -q -b main
 git add -A
-git -c user.name="${GIT_AUTHOR_NAME:-$(git config user.name || echo author)}" -c user.email="${GIT_AUTHOR_EMAIL:-$(git config user.email || echo author@example.com)}" \
+git -c user.name="${GIT_AUTHOR_NAME:-IncognitoGK9}" -c user.email="${GIT_AUTHOR_EMAIL:-IncognitoGK9@users.noreply.github.com}" \
     commit -q -m "Two-step heart disease screening: pipeline, app, tests, results and paper" || echo "(nothing new to commit)"
 echo "Repository prepared at: $DEST  ($(git ls-files | wc -l | tr -d ' ') files)"
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then

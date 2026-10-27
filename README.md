@@ -3,6 +3,8 @@
 Class assignment, Advanced Machine Learning, Strathmore University. Dataset: Heart Failure Prediction (Kaggle, 918 patients, 11 inputs).
 All numbers in the paper come from `results/*.csv`, produced by the scripts here.
 
+Live app: https://two-step-heart-screening.streamlit.app/ (research prototype, not for clinical use)
+
 ## Folders
 - `scripts/`  `common.py` (settings, models, calibration, thresholds), `02_train_models.py`, `03_ladder.py`, `04_evaluate.py`, `05_site_validation.py`, `06_export_models.py`, `run_all.py`
 - `app/`      Streamlit application (`app.py`, `logic.py`); trained models are written to `app/models/`
