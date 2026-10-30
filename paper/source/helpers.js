@@ -43,17 +43,17 @@ const H1 = (t) => new Paragraph({ heading: HeadingLevel.HEADING_1, children: [ne
 const H2 = (t) => new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun(t)], keepNext: true,
   spacing: { after: 0, before: 190 } });
 const BUL = (text) => new Paragraph({ numbering: { reference: 'bullets', level: 0 }, children: runs(text),
-  alignment: AlignmentType.JUSTIFIED, spacing: { after: 0, line: 240, lineRule: 'auto' } });
+  alignment: AlignmentType.JUSTIFIED, spacing: { before: 0, after: 60 } });
 const NUM = (text, ref = 'nums') => new Paragraph({ numbering: { reference: ref, level: 0 }, children: runs(text),
-  alignment: AlignmentType.JUSTIFIED, spacing: { after: 0, line: 240, lineRule: 'auto' } });
+  alignment: AlignmentType.JUSTIFIED, spacing: { before: 0, after: 60 } });
 
 function caption(label, text) {
   return new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 40, after: 100, ...SINGLE },
-    children: [new TextRun({ text: label + ' ', bold: true, size: 17 }), ...runs(text, { size: 17 })] });
+    children: [new TextRun({ text: label + ' ', bold: true, size: 18 }), ...runs(text, { size: 18 })] });
 }
 function tcaption(label, text) {   // table captions go above the table
   return new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 80, after: 40, ...SINGLE }, keepNext: true,
-    children: [new TextRun({ text: label + ' ', bold: true, size: 17 }), ...runs(text, { size: 17 })] });
+    children: [new TextRun({ text: label + ' ', bold: true, size: 18 }), ...runs(text, { size: 18 })] });
 }
 function figure(path, widthIn, label, text) {
   const buf = fs.readFileSync(path);

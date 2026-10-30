@@ -5,7 +5,7 @@ const H = require('./helpers.js');
 const REFS = require('./refs.js');
 const N = require('./numbers.json');
 const { d, P: P0, H1, H2, BUL: BUL0, NUM: NUM0, figure, table, tcaption, eqImg, SINGLE, scaleW } = H;
-const { Document, Packer, Paragraph, TextRun, AlignmentType, LevelFormat, Footer, PageNumber, BorderStyle, Table, TableRow, TableCell, WidthType, ShadingType } = d;
+const { Document, Packer, Paragraph, TextRun, AlignmentType, LevelFormat, Footer, PageNumber, BorderStyle, Table, TableRow, TableCell, WidthType, ShadingType, ExternalHyperlink } = d;
 const FIG = path.join(__dirname, '..', '..', 'figures') + path.sep;
 const SRC = __dirname + path.sep;
 
@@ -29,33 +29,38 @@ const m = N.main, dd = N.data, pr = N.prim, bs = N.base, cf = N.conf, tt = N.tes
 const sub = (a, b) => (parseFloat(a) - parseFloat(b)).toFixed(1);
 const hs = N.site_rows.map(r => parseFloat(r[5])), ns = N.site_rows.map(r => parseFloat(r[6]));
 const hsMin = Math.min(...hs).toFixed(1), hsMax = Math.max(...hs).toFixed(1), nsMin = Math.min(...ns).toFixed(1), nsMax = Math.max(...ns).toFixed(1);
+
+const LINKS = (items) => items.map(([label, url]) => new Paragraph({ alignment: AlignmentType.LEFT, spacing: { before: 0, after: 40 }, indent: { left: 300 },
+  children: [new TextRun({ text: label + ' ' }), new ExternalHyperlink({ link: url, children: [new TextRun({ text: url, style: 'Hyperlink', color: '1F3A93', underline: {} })] })] }));
+const GH = 'https://github.com/IncognitoGK9/two-step-heart-screening', APPURL = 'https://two-step-heart-screening.streamlit.app/';
 const B = [];
 
 // ------------------------------------------------------------------ title block
 B.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80, ...SINGLE },
-  children: [new TextRun({ text: 'Two-Step Heart Disease Screening with a “Not Sure” Option: Classical Classifiers, Stacking and Prevalence-Adjusted Referral Rules', bold: true, size: 28 })] }));
+  children: [new TextRun({ text: 'Two-Step Heart Disease Screening Using Calibrated Stacked Ensemble Classifiers', bold: true, size: 28 })] }));
 B.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20, ...SINGLE }, children: [new TextRun({ text: 'Ombiro Zablon B. Handson 225446  ·  Lawrence Kasera 111780', size: 21 })] }));
-B.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20, ...SINGLE }, children: [new TextRun({ text: 'School of Computing and Engineering Sciences, Strathmore University, Nairobi, Kenya', italics: true, size: 19 })] }));
-B.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 160, ...SINGLE }, children: [new TextRun({ text: 'Advanced Machine Learning - Class Assignment  ·  October 2026', size: 19 })] }));
+B.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20, ...SINGLE }, children: [new TextRun({ text: 'School of Computing and Engineering Sciences, Strathmore University, Nairobi, Kenya', italics: true, size: 20 })] }));
+B.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 160, ...SINGLE }, children: [new TextRun({ text: 'Advanced Machine Learning - Class Assignment  ·  October 2026', size: 20 })] }));
 
 // ------------------------------------------------------------------ abstract
-const ABS = `Heart disease is a leading cause of death, and where specialists and exercise-test equipment are limited, patients must first be sorted with inexpensive measurements. Using the Heart Failure Prediction dataset (${dd.n} patients, 11 features), we compare seven classical and neural classifiers and two ensembles on accuracy under nested, repeated stratified cross-validation (3 × 10 outer folds, 5-fold inner tuning). The accuracy-weighted soft vote was highest (${m.SOFT.acc} ± ${m.SOFT.sd} %), but the leading methods did not differ significantly (soft vote versus random forest, corrected _t_-test _p_ = ${tt.soft_rf.p}). We therefore propose a two-step screening system built on stacking. Step 1 uses five inexpensive inputs and returns Low risk, High risk or Not sure; Step 2 adds the examination results. Cut-offs are set from training-fold out-of-fold scores only, and results are adjusted to the target prevalence. At an assumed 5 % prevalence, the system needed ${pr.tests} equipment tests per 1,000 patients instead of 1,000 and sent ${pr.missed} sick patients per 1,000 home (95 % interval ${pr.lo}–${pr.hi}), against ${bs.fixed_missed} for a fixed 0.5 cutoff at Step 1; ${pr.ns} per 1,000 remained “not sure”. In leave-one-site-out checks the Step 1 cut-off did not transfer reliably (up to ${N.site.s1_max} % of sick patients sent home at one site). The data are a single, referral-enriched, historical sample, and the system has no clinical validation.`;
-B.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { after: 60, ...SINGLE }, indent: { left: 300, right: 300 },
+const ABS = `Heart disease is a leading cause of death, and where specialists and exercise-test equipment are limited, patients must first be sorted with inexpensive measurements. Using the Heart Failure Prediction dataset (${dd.n} patients, 11 features), we compare seven classical and neural classifiers and two ensembles on accuracy under nested, repeated stratified cross-validation (3 × 10 outer folds, 5-fold inner tuning). The accuracy-weighted soft vote was highest (${m.SOFT.acc} ± ${m.SOFT.sd} %), but the leading methods did not differ significantly (soft vote versus random forest, corrected _t_-test _p_ = ${tt.soft_rf.p}). Because accuracy cannot separate them, we build a two-step screening system on a calibrated stacked ensemble. Step 1 uses five inexpensive inputs and returns Low risk, High risk or Not sure; Step 2 adds the examination results. Cut-offs are set from training-fold out-of-fold scores only, and results are adjusted to the target prevalence. At an assumed 5 % prevalence, the system needed ${pr.tests} equipment tests per 1,000 patients instead of 1,000 and sent ${pr.missed} sick patients per 1,000 home (95 % interval ${pr.lo}–${pr.hi}); a fixed 0.5 cut-off at Step 1 needed ${bs.fixed_tests} tests but sent ${bs.fixed_missed} sick patients home, and ${pr.ns} per 1,000 remained “not sure” under the proposed system. In leave-one-site-out checks the Step 1 cut-off did not transfer reliably (up to ${N.site.s1_max} % of sick patients sent home at one site). The data are a single, referral-enriched, historical sample, and the system has no clinical validation.`;
+B.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { after: 80, line: 264, lineRule: 'auto' }, indent: { left: 300, right: 300 },
   border: { top: { style: BorderStyle.SINGLE, size: 4, color: '888888', space: 6 } },
-  children: [new TextRun({ text: 'Abstract — ', bold: true, size: 19 }), ...H.runs(ABS, { size: 19 })] }));
-B.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { after: 160, ...SINGLE }, indent: { left: 300, right: 300 },
+  children: [new TextRun({ text: 'Abstract — ', bold: true, size: 20 }), ...H.runs(ABS, { size: 20 })] }));
+B.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { after: 200, line: 264, lineRule: 'auto' }, indent: { left: 300, right: 300 },
   border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: '888888', space: 6 } },
-  children: [new TextRun({ text: 'Keywords — ', bold: true, size: 19 }), new TextRun({ text: 'heart disease screening; classical machine learning; stacking; abstention; prevalence shift; nested cross-validation.', size: 19 })] }));
+  children: [new TextRun({ text: 'Keywords — ', bold: true, size: 20 }), new TextRun({ text: 'heart disease screening; classical machine learning; stacking; abstention; prevalence shift; nested cross-validation.', size: 20 })] }));
 
 // ------------------------------------------------------------------ 1 introduction
 B.push(H1('1. Introduction'));
-B.push(P(`Cardiovascular diseases caused an estimated 19.8 million deaths in 2022, about 32 % of all deaths worldwide {WHO}. About 5 in 100 adults in the United States (4.9 %) report coronary heart disease {CDC}. Many cases are found late, although the risk is visible in routine measurements: age, blood pressure, chest-pain history, blood sugar and cholesterol. We take as a design premise, not as a measured fact, that in many clinics a heart specialist and exercise-test equipment are not available to every patient with a complaint, so the first decision is who needs the equipment test and how soon. Risk charts address a version of this problem and have been applied in Kenya {WHORC,VUSI}; they give one score from population cohorts and no way to say that a patient cannot be classified from the inputs at hand.`));
+B.push(P(`Cardiovascular diseases caused an estimated 19.8 million deaths in 2022, about 32 % of all deaths worldwide {WHO}. About 1 in 20 adults aged 20 and older in the United States (about 5 %) have coronary artery disease {CDC}. Many cases are found late, although the risk is visible in routine measurements: age, blood pressure, chest-pain history, blood sugar and cholesterol. We take as a design premise, not as a measured fact, that in many clinics a heart specialist and exercise-test equipment are not available to every patient with a complaint, so the first decision is who needs the equipment test and how soon. Risk charts address a version of this problem and have been applied in Kenya {WHORC,VUSI}; they give one score from population cohorts and no way to say that a patient cannot be classified from the inputs at hand.`));
 B.push(P(`Machine-learning studies of the Heart Failure Prediction dataset report accuracies of 85–93 % {ZENG,QUMS,ZHANG}, mostly from one random split. Accuracy, however, treats the two errors alike. In screening, the dangerous error is a sick patient sent home. The question is therefore not only which classifier is most accurate, but whether a classifier can be arranged so that cheap measurements decide first, uncertain patients receive more tests, and the number of sick patients sent home is controlled.`));
 B.push(P(`**Problem.** Given the 11 clinical inputs of ${dd.n} patients, classify heart disease, compare supervised methods fairly, and test an improvement. **Proposed solution.** A two-step screening system (Fig. 1): Step 1 uses five inputs available in a basic clinic and returns Low risk (home), High risk (urgent tests) or Not sure (tests, normal priority); Step 2 adds the examination results and returns Low risk, High risk or Still not sure (specialist decides). Our contributions are:`, { before: 60 }));
 B.push(NUM(`A leakage-free benchmark of nine methods (seven single models, a soft vote and stacking) with corrected significance tests {NADEAU,DEMSAR}.`));
 B.push(NUM(`A two-step system whose calibration, cut-offs and “not sure” bands come from training-fold out-of-fold scores, with a pre-specified rule for each design choice and prevalence-adjusted results {SAERENS}.`));
 B.push(NUM(`An evaluation against two baselines, five prevalence scenarios and leave-one-site-out validation on the original UCI files {UCI}, reporting where the approach fails.`));
-B.push(P(`Section 2 reviews related work, Section 3 gives the methodology (training dataset, problem, models, train/test split and the screening system), Section 4 the results, Section 5 discusses limits and Section 6 concludes. The code is at https://github.com/IncognitoGK9/two-step-heart-screening and the application is hosted at https://two-step-heart-screening.streamlit.app/.`));
+B.push(P(`Section 2 reviews related work, Section 3 gives the methodology (training dataset, problem, models, train/test split and the screening system), Section 4 the results, Section 5 discusses limits and Section 6 concludes. The code and the hosted application are available at:`, { keepNext: true }));
+B.push(...LINKS([['Code:', GH], ['Application:', APPURL]]));
 
 // ------------------------------------------------------------------ 2 related works
 B.push(H1('2. Related Works'));
@@ -70,7 +75,7 @@ B.push(T([
   ['Prior shift, calibration', 'Saerens et al. {SAERENS}; Van Calster et al. {VANCALSTER}; Guo et al. {GUO}', 'Odds are re-weighted to a new prevalence; probabilities must be calibrated to be read as risk.'],
   ['Abstention', 'Vovk et al. {VOVK}; Angelopoulos and Bates {ANGEL}', 'Conformal cut-offs give coverage guarantees; compared here with an empirical two-threshold rule.'],
   ['Ensembles', 'Wolpert {WOLPERT}', 'Stacking learns how to combine models; used as our proposed scorer.'],
-], scaleW([1250, 2850, 4200]), { size: 16, keep: true }));
+], scaleW([1250, 2850, 4200]), { size: 18, keep: true }));
 B.push(P(`In short, prior work on this dataset ranks classifiers by accuracy; the screening literature supplies calibration, prevalence adjustment and abstention. We combine the two and measure the result in screening terms: tests needed, sick patients sent home and patients left “not sure”.`, { before: 80 }));
 
 // ------------------------------------------------------------------ 3 dataset and problem
@@ -92,7 +97,7 @@ B.push(T([
   ['ExerciseAngina', 'B', 'Exercise-induced angina', F.EA],
   ['Oldpeak', 'B', 'ST depression (mm)', F.op],
   ['ST_Slope', 'B', 'Peak-exercise ST slope', F.SL],
-], scaleW([1500, 650, 3000, 3150]), { size: 16, keep: true }));
+], scaleW([1500, 850, 2900, 3050]), { size: 18, keep: true }));
 const zs = N.zero_by_site;
 B.push(P(`A* marks cholesterol, which needs a blood test and is used only in Step 2. ${dd.zero} patients (${dd.zero_pct} %) have Cholesterol = 0, a placeholder for an unmeasured value, and one has RestingBP = 0. Zero cholesterol is associated with disease in ${dd.zero_prev} % of these patients against ${dd.rest_prev} % of the rest. In the UCI files all ${dd.zero} zeros come from two sites (Switzerland ${zs.switzerland}, VA Long Beach ${zs.va}), so the zero indicates the recording site as much as a clinical fact; we therefore treat zeros as missing, impute the training-fold median, and add no missing-value indicator {SPERRIN}.`, { before: 100 }));
 B.push(H2('3.2 Problem statement'));
@@ -121,7 +126,7 @@ B.push(T([
   ['SVM', 'RBF kernel; C ∈ {0.1, 1, 10}; γ ∈ {scale, 0.01, 0.1}', '9'],
   ['GBM', 'max_leaf_nodes ∈ {7, 15}; learning_rate ∈ {0.03, 0.1}; max_iter ∈ {100, 200}', '8'],
   ['MLP', 'hidden layers ∈ {(16), (32, 16)}; L2 penalty ∈ {0.001, 0.01}', '4'],
-], scaleW([900, 6500, 900]), { size: 16, keep: true }));
+], scaleW([900, 6500, 900]), { size: 18, keep: true }));
 B.push(H2('3.5 Evaluation protocol and train/test split'));
 B.push(P(`The outer loop is stratified 10-fold cross-validation repeated 3 times (30 test folds of about 92 patients). Inside each training fold, a stratified 5-fold grid search selects hyper-parameters, produces the out-of-fold probabilities used for stacking, calibration and cut-offs, and the model is refitted and evaluated once on the held-out fold, so tuning never touches test data {CAWLEY}. A single stratified 80/20 hold-out (734 training, 184 test patients) is also reported for comparison with the literature. The random seed is 42. A unit test flips the test labels and checks that predictions do not change, which would expose any leakage. The “best” method is fixed before the results: the highest mean outer-fold accuracy on F_raw, ties of under 0.1 point broken by AUROC.`));
 B.push(H2('3.6 Two-step screening system'));
@@ -147,7 +152,7 @@ const rows3 = [['Method', 'CV acc. (%)', 'Hold-out (%)', 'AUROC', 'Sens.', 'Spec
   .concat(ord.map(k => [nm[k] || m[k].name, `${m[k].acc} ± ${m[k].sd}`, m[k].ho, m[k].auroc, m[k].sens, m[k].spec, m[k].brier, `${m[k].ece_raw} → ${m[k].ece_cal}`]));
 rows3[bestI][1] = '**' + m[N.best_cv].acc + '** ± ' + m[N.best_cv].sd;
 B.push(tcaption('Table 4.', `All methods on the 11 inputs (F_raw): mean ± sd over 30 outer folds, 80/20 hold-out accuracy, and other metrics (fold means). Best CV accuracy in bold. Source: results/table_main.csv, table_holdout.csv.`));
-B.push(T(rows3, scaleW([2150, 1200, 850, 800, 650, 650, 650, 1350]), { size: 16, ruleAbove: [8], shadeRows: [8, 9], keep: true }));
+B.push(T(rows3, scaleW([1700, 1180, 720, 850, 650, 650, 650, 1500]), { size: 18, ruleAbove: [8], shadeRows: [8, 9], keep: true }));
 B.push(P(`The best method under the rule in §3.5 is the accuracy-weighted soft vote (${m.SOFT.acc} %), followed by stacking (${m.STACK.acc} %) and random forest (${m.RF.acc} %); the decision tree trails (${m.DT.acc} %). The Friedman test rejects equal performance (χ² = ${tt.chi2}, _p_ = ${tt.p_friedman}), driven mainly by the tree. Among the leading methods the differences are not significant: soft vote versus random forest Δ = ${tt.soft_rf.diff} points (_p_ = ${tt.soft_rf.p}); stacking versus random forest Δ = ${tt.stack_rf.diff} (_p_ = ${tt.stack_rf.p}); stacking versus soft vote Δ = ${tt.stack_soft.diff} (_p_ = ${tt.stack_soft.p}). Hold-out accuracies are 2–4 points higher than the cross-validated means for every model except the tree, which is 5 points lower, and they reorder the models, as expected from a 184-patient test set (binomial standard error about 2.4 points). On this evidence accuracy cannot separate the strong methods. Handling of zero cholesterol matters little for the ensembles: the soft vote reaches ${m.SOFT.acc} % raw, ${m.SOFT.acc_ind} % with the indicator, and 87.40 % with imputation alone (results/summary.md); only logistic regression gains clearly from the indicator (${m.LR.acc} to ${m.LR.acc_ind} %).`, { before: 100 }));
 B.push(...figure(SRC + 'fig_cm_rel.png', 5.6, 'Figure 2.', `(a) Confusion matrix of the best method (${cf.method}), pooled over the test folds of one repetition (n = ${dd.n}): accuracy ${cf.acc} %, sensitivity ${cf.sens} %, specificity ${cf.spec} %. (b) Reliability of the stacking score before and after Platt scaling.`));
 B.push(H2('4.2 Which inputs matter, and the choice of Step 1'));
@@ -158,19 +163,19 @@ B.push(H2('4.3 Two-step system'));
 B.push(P(`Table 5 gives the system at the 5 % reference prevalence; each row adds or removes one component, so the table is also the ablation of the proposal. Per 1,000 patients screened, the two-step system with Step 1 released at 95 % sensitivity sends ${pr.tests} patients for equipment tests (${(1000 - pr.tests)} fewer than testing everyone) and sends ${pr.missed} sick patients home (${pr.missed1} at Step 1), final sensitivity ${pr.sens} %. The fixed 0.5 cutoff at Step 1 needs fewer tests (${bs.fixed_tests}) but misses ${bs.fixed_missed}, about ${(parseFloat(bs.fixed_missed) / parseFloat(pr.missed)).toFixed(1)} times as many. Testing everyone and keeping the “not sure” band misses fewer (${bs.ns_missed}) but needs 1,000 tests and leaves ${bs.ns_ns} patients not sure. Raising the Step 1 release level from 90 to 98 % lowers missed cases (${N.sys_rows[0][2].split(' ')[0]} to ${N.sys_rows[2][2].split(' ')[0]}) and raises tests (${N.sys_rows[0][1]} to ${N.sys_rows[2][1]}). Of every 1,000 patients, ${pr.high} are called High risk with positive predictive value ${pr.ppv}, and ${pr.ns} end Not sure. At Step 1, ${rt.sick_home1} % of sick and ${rt.healthy_home1} % of healthy patients are sent home; overall ${rt.healthy_home_final} % of healthy patients go home and ${rt.ns_healthy} % are left not sure.`));
 B.push(tcaption('Table 5.', 'Systems at 5 % prevalence, per 1,000 patients screened (stacking scorer). Source: results/table_system.csv.'));
 B.push(T([['System', 'Tests', 'Sick sent home (95 % interval)', 'Sens. (%)', 'High risk', 'PPV', 'Not sure']].concat(N.sys_rows),
-  scaleW([3300, 700, 1700, 800, 750, 600, 750]), { size: 16, boldRows: [2], ruleAbove: [4], keep: true }));
+  scaleW([3300, 700, 1700, 800, 750, 600, 750]), { size: 18, boldRows: [2], ruleAbove: [4], keep: true }));
 B.push(...figure(FIG + 'fig_tradeoff.png', 4.3, 'Figure 4.', 'Sick patients sent home against patients needing equipment tests, per 1,000 at 5 % prevalence: two-step systems at Step 1 release levels of 90, 95 and 98 % (stacking and random forest) and the two baselines.'));
 B.push(P(`Prevalence changes the predictive values and counts, not the rates (Table 6). At 2 % prevalence the system sends home ${N.scen_rows[0][2].split(' ')[0]} sick patients per 1,000 with PPV ${N.scen_rows[0][4]}; at 20 %, ${N.scen_rows[3][2].split(' ')[0]} with PPV ${N.scen_rows[3][4]}. Using the dataset’s own prevalence (${dd.pos_pct} %) would overstate PPV (${N.scen_rows[4][4]}) for a general clinic.`, { before: 100 }));
 B.push(tcaption('Table 6.', 'Two-step system (Step 1 release 95 %) by assumed prevalence, per 1,000 patients.'));
 B.push(T([['Prevalence', 'Tests', 'Sick sent home (95 % interval)', 'High risk', 'PPV', 'NPV', 'Not sure']].concat(N.scen_rows),
-  scaleW([1700, 700, 2200, 900, 700, 700, 800]), { size: 16, boldRows: [2], keep: true }));
+  scaleW([1700, 700, 2200, 900, 700, 700, 800]), { size: 18, boldRows: [2], keep: true }));
 B.push(H2('4.4 Calibration and the “not sure” mechanism'));
 B.push(P(`Platt scaling changes little: stacking Brier ${N.calib.stack_brier_raw} before and ${N.calib.stack_brier_cal} after, ECE ${N.calib.stack_ece_raw} and ${N.calib.stack_ece_cal} on F_imp; for _k_-NN it worsens ECE (${N.calib.knn_ece_raw} to ${N.calib.knn_ece_cal}). The two cut-off mechanisms were close at Step 1: the empirical two-threshold rule leaves ${N.mech.e.cov_sick} % of sick patients out of the Low group and ${N.mech.e.cov_healthy} % of healthy ones out of the High group, with ${N.mech.e.ns} % Not sure; the conformal rule gives ${N.mech.c.cov_sick} %, ${N.mech.c.cov_healthy} % and ${N.mech.c.ns} %. The gap in the “not sure” share is under 2 points, and the pre-specified rule selects the two-threshold rule, which also has the smaller final “not sure” share (${N.mech.e.ns_final} against ${N.mech.c.ns_final} %).`));
 B.push(H2('4.5 Leave-one-site-out validation'));
 B.push(P(`To test transfer to a new hospital, models were trained on three UCI sites and applied to the fourth, with cut-offs from the training sites (Table 7; results/table_site_validation.csv). AUROC ranges from ${N.site.a1_min} to ${N.site.a1_max} at Step 1 and ${N.site.a2_min} to ${N.site.a2_max} at Step 2. The Step 1 cut-off, designed to send at most 5 % of sick patients home, sends ${N.site.s1_max} % home at the ${N.site.s1_max_site} site, where prevalence is lowest; Step 2 releases no further sick patients at any site. Healthy patients sent home range from ${hsMin} % to ${hsMax} % and the Not sure share from ${nsMin} % to ${nsMax} %.`));
 B.push(tcaption('Table 7.', 'Leave-one-site-out results (stacking, Step 1 release 95 %).'));
 B.push(T([['Held-out site', 'Patients (prev.)', 'AUROC Step 1', 'AUROC Step 2', 'Sick sent home (%)', 'Healthy sent home (%)', 'Not sure (%)']].concat(N.site_rows),
-  scaleW([1500, 1300, 950, 950, 1100, 1250, 1000]), { size: 16, keep: true }));
+  scaleW([1500, 1300, 950, 950, 1100, 1250, 1000]), { size: 18, keep: true }));
 
 B.push(H2('4.6 Web application'));
 B.push(P(`The system is available as a web application at https://two-step-heart-screening.streamlit.app/, built with Streamlit from the code in the submitted archive. Fig. 5 shows it on a phone-sized screen, the setting of a basic clinic. Each screen asks only for the inputs of its step, rejects values outside plausible ranges, and returns Low risk, High risk or Not sure with a plain instruction. It also shows the estimated risk at the chosen prevalence and, at Step 1, the share of sick patients that cross-validation sent home. The sidebar sets the assumed prevalence and the Step 1 safety level, and cholesterol can be marked as not measured at Step 2. The values in the figure are the form’s default example values, not a real patient. The application carries the warning that it is a research prototype and not for clinical use.`));
@@ -185,25 +190,27 @@ B.push(P(`**Limitations.** (1) One dataset, pooled from 1980s cohorts, with no c
 
 // ------------------------------------------------------------------ 7 conclusion
 B.push(H1('6. Conclusion'));
-B.push(P(`Under repeated nested cross-validation, the soft vote, stacking and random forest are statistically tied on accuracy (about ${m.SOFT.acc} %), and only the decision tree is clearly worse. A two-step screening system built on stacking answers a different question: at 5 % prevalence it needs ${pr.tests} tests per 1,000 patients and sends ${pr.missed} sick patients home, between the cheap fixed-cutoff pathway (${bs.fixed_tests} tests, ${bs.fixed_missed} missed) and testing everyone (1,000 tests, ${bs.all_missed} missed with a forced decision). The approach fails to transfer cleanly across sites and leaves a third of patients not sure, so it supports a research prototype, not clinical use. Next steps are external validation on a local cohort and recalibration of the Step 1 cut-off per site.`));
+B.push(P(`Under repeated nested cross-validation, the soft vote, stacking and random forest are statistically tied on accuracy (${m.SOFT.acc}, ${m.STACK.acc} and ${m.RF.acc} %), and only the decision tree is clearly worse. A two-step screening system built on a calibrated stacked ensemble answers a different question. At 5 % prevalence it needs ${pr.tests} tests per 1,000 patients, fewer than testing everyone (1,000), and sends ${pr.missed} sick patients home, fewer than the fixed-cutoff pathway (${bs.fixed_tests} tests, ${bs.fixed_missed} missed) and than testing everyone with a forced decision (${bs.all_missed} missed). The price is a “not sure” group of ${pr.ns} per 1,000 patients, and the Step 1 cut-off does not transfer cleanly across sites, so the system is a research prototype, not a clinical tool. Next steps are external validation on a local cohort and recalibration of the Step 1 cut-off per site.`));
 
 // ------------------------------------------------------------------ references
 B.push(H1('References'));
 const refParas = () => order.map((k, i) => new Paragraph({ spacing: { after: 40, ...SINGLE }, indent: { left: 420, hanging: 420 }, alignment: AlignmentType.LEFT,
-  children: [new TextRun({ text: `[${i + 1}]\t`, size: 17 }), ...H.runs(REFS[k], { size: 17 })], tabStops: [{ type: 'left', position: 420 }] }));
+  children: [new TextRun({ text: `[${i + 1}]\t`, size: 18 }), ...H.runs(REFS[k], { size: 18 })], tabStops: [{ type: 'left', position: 420 }] }));
 const REF_AT = B.length; B.push(null);
 const APP = [];
 APP.push(H1('Appendix A. Reproducibility'));
-APP.push(P(`The code, results and paper source are available at https://github.com/IncognitoGK9/two-step-heart-screening and in the submitted archive. The web application is hosted on Streamlit Community Cloud at https://two-step-heart-screening.streamlit.app/. The full study runs in about 11 minutes (679 s) on a 12-core Apple M3 Pro Mac; the README in the repository gives the commands. Library versions are pinned in requirements.txt and the random seed is 42.`));
+APP.push(P(`The code, results and paper source are available in the submitted archive and at the following addresses. The web application is hosted on Streamlit Community Cloud.`, { keepNext: true }));
+APP.push(...LINKS([['Code:', GH], ['Application:', APPURL]]));
+APP.push(P(`The full study runs in about 11 minutes (679 s) on a 12-core Apple M3 Pro Mac; the README in the repository gives the commands. Library versions are pinned in requirements.txt and the random seed is 42.`, { before: 60 }));
 
 const unused = Object.keys(REFS).filter(k => !order.includes(k));
 if (unused.length) { console.error('UNUSED REFS:', unused.join(', ')); process.exit(1); }
 const body = B.slice(0, REF_AT).concat(refParas(), APP);
 
 const doc = new Document({
-  creator: 'Handson & Kasera', title: 'Two-Step Heart Disease Screening',
+  creator: 'Handson & Kasera', title: 'Two-Step Heart Disease Screening Using Calibrated Stacked Ensemble Classifiers',
   styles: {
-    default: { document: { run: { font: 'Times New Roman', size: 22 }, paragraph: { spacing: { line: 360, lineRule: 'auto', after: 0 } } } },
+    default: { document: { run: { font: 'Times New Roman', size: 22 }, paragraph: { spacing: { line: 312, lineRule: 'auto', after: 0 } } } },
     paragraphStyles: [
       { id: 'Heading1', name: 'Heading 1', basedOn: 'Normal', next: 'Normal', quickFormat: true, run: { size: 24, bold: true, font: 'Times New Roman' }, paragraph: { spacing: { before: 200, after: 0 }, outlineLevel: 0 } },
       { id: 'Heading2', name: 'Heading 2', basedOn: 'Normal', next: 'Normal', quickFormat: true, run: { size: 22, bold: true, italics: true, font: 'Times New Roman' }, paragraph: { spacing: { before: 140, after: 0 }, outlineLevel: 1 } },

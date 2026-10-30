@@ -1,6 +1,6 @@
 #!/bin/bash
-# One command: copies the code from Google Drive to ~/hf_run, builds a private venv there
-# (~/hf_run/.venv, created once, reused), runs the study, copies results/ and figures/ back to Drive.
+# One command: copies the code to ~/hf_run (outside any synced folder), builds a private venv there
+# (~/hf_run/.venv, created once, reused), runs the study, copies results/ and figures/ back to the source folder.
 #   bash run_local.sh [--test | --app | --export | --site] [--quick] [--limit-folds K] [--no-holdout] [--jobs N]
 set -e
 MODE=run
@@ -18,7 +18,7 @@ if [ -n "$VIRTUAL_ENV" ]; then
   unset VIRTUAL_ENV
 fi
 PY=""
-for c in python3.13 python3.12 python3.11 python3.10 python3; do
+for c in python3.13 python3.12 python3.11 python3; do
   if command -v "$c" >/dev/null 2>&1; then PY="$c"; break; fi
 done
 [ -n "$PY" ] || { echo "No python3 found. Install one (for example: brew install python@3.12)."; exit 1; }
