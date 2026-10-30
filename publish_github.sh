@@ -13,7 +13,7 @@ case "$DEST" in *"My Drive"*|*"CloudStorage"*|*"Google Drive"*|*iCloud*|*Dropbox
 mkdir -p "$DEST"
 rsync -a --delete --exclude .git --exclude .venv --exclude __pycache__ --exclude .pytest_cache --exclude '.DS_Store' \
       --exclude '.req_stamp' --exclude '.py_stamp' --exclude '_pv*' --exclude '_preview' --exclude '*.tmp' \
-      --exclude 'external/*.zip' "$SRC"/ "$DEST"/
+      --exclude 'external/*.zip' --exclude paper --exclude docs --exclude figures/fig_app_mobile.png "$SRC"/ "$DEST"/
 cd "$DEST"
 cat > .gitignore <<'GI'
 .venv/
@@ -25,7 +25,7 @@ GI
 [ -d .git ] || git init -q -b main
 git add -A
 git -c user.name="${GIT_AUTHOR_NAME:-IncognitoGK9}" -c user.email="${GIT_AUTHOR_EMAIL:-IncognitoGK9@users.noreply.github.com}" \
-    commit -q -m "Two-step heart disease screening: pipeline, app, tests, results and paper" || echo "(nothing new to commit)"
+    commit -q -m "Two-step heart disease screening: pipeline, app, tests and results" || echo "(nothing new to commit)"
 echo "Repository prepared at: $DEST  ($(git ls-files | wc -l | tr -d ' ') files)"
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
   USER_LOGIN="$(gh api user --jq .login)"

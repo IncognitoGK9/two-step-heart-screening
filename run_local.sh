@@ -27,7 +27,7 @@ echo "Using $PYV at $(command -v $PY)"
 
 mkdir -p "$WORK"
 rsync -a --delete --exclude .venv --exclude app/models --exclude .req_stamp --exclude .py_stamp --exclude results --exclude figures \
-      --exclude paper --exclude docs --exclude '.DS_Store' --exclude __pycache__ \
+      --exclude '.DS_Store' --exclude __pycache__ \
       "$SRC/" "$WORK/"
 cd "$WORK"
 if [ -d .venv ] && [ "$(cat .py_stamp 2>/dev/null)" != "$PYV" ]; then rm -rf .venv .req_stamp; fi

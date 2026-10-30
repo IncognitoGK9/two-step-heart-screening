@@ -1,5 +1,5 @@
 """
-04_evaluate.py - every table, test and figure of the paper from results/*.csv.
+04_evaluate.py - every table, test and figure from results/*.csv.
 Outputs: table_main.csv, table_holdout.csv, table_tests.csv, table_confusion.csv, table_system_rates.csv,
          table_system.csv, table_mechanism.csv, auto_decisions.json, summary.md, figures (300 dpi).
 """
