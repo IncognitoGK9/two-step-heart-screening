@@ -1,26 +1,25 @@
-# Two-Step Heart Disease Screening
+# Two-Step Heart Disease Screening Using Calibrated Stacked Ensemble Classifiers
 
-**Using calibrated stacked ensemble classifiers**
+Class assignment for Advanced Machine Learning, School of Computing and Engineering Sciences, Strathmore University, Nairobi, October 2026.
 
-Advanced Machine Learning class assignment, School of Computing and Engineering Sciences, Strathmore University, Nairobi, October 2026.
 Authors: Ombiro Zablon B. Handson and Lawrence Kasera.
 
-> **Research prototype, not for clinical use.** The system is built from one public, historical dataset of 918 patients and has no clinical validation.
+> Research prototype, not for clinical use. The system is built from one public, historical dataset of 918 patients and has no clinical validation.
 
-**Live application:** https://two-step-heart-screening.streamlit.app/
-**Paper:** [`paper/HeartDisease_TwoStep_Screening_Paper.pdf`](paper/HeartDisease_TwoStep_Screening_Paper.pdf) (12 pages; Word version in the same folder)
+- Web app: https://two-step-heart-screening.streamlit.app/
+- Paper: [PDF](paper/HeartDisease_TwoStep_Screening_Paper.pdf) and [Word](paper/HeartDisease_TwoStep_Screening_Paper.docx)
 
 ---
 
 ## The problem
 
-Heart disease is a leading cause of death. Where heart specialists and exercise-test equipment are scarce, patients must first be sorted using inexpensive measurements. Studies on the Heart Failure Prediction dataset compare classifiers on accuracy from a single split, but accuracy treats both errors alike. In screening the dangerous error is a **sick patient sent home**.
+Heart disease is a leading cause of death. Where heart specialists and exercise-test equipment are scarce, patients must first be sorted using inexpensive measurements. Studies on the Heart Failure Prediction dataset compare classifiers on accuracy from a single split, but accuracy treats both errors alike. In screening the dangerous error is a sick patient sent home.
 
 ## What this project does
 
-1. **Benchmark.** Nine methods (logistic regression, decision tree, random forest, k-NN, RBF-SVM, gradient boosting, a small MLP, an accuracy-weighted soft vote and stacking) are compared on accuracy under nested, repeated stratified cross-validation (3 x 10 outer folds, 5-fold inner tuning, seed 42). Differences are tested with the Friedman test and the corrected resampled t-test.
-2. **Two-step screening system.** Stacking is used as the scorer, with Platt calibration, prior-shift correction to a target prevalence, and a "Not sure" band whose cut-offs come from training-fold out-of-fold scores only.
-3. **Stress tests.** Two baselines, five prevalence scenarios (2, 5, 10, 20 % and the dataset's own 55.3 %) and leave-one-site-out validation on the original UCI files.
+1. Benchmark. Nine methods (logistic regression, decision tree, random forest, k-NN, RBF-SVM, gradient boosting, a small MLP, an accuracy-weighted soft vote and stacking) are compared on accuracy under nested, repeated stratified cross-validation (3 x 10 outer folds, 5-fold inner tuning, seed 42). Differences are tested with the Friedman test and the corrected resampled t-test.
+2. Two-step screening system. Stacking is used as the scorer, with Platt calibration, prior-shift correction to a target prevalence, and a "Not sure" band whose cut-offs come from training-fold out-of-fold scores only.
+3. Stress tests. Two baselines, five prevalence scenarios (2, 5, 10, 20 % and the dataset's own 55.3 %) and leave-one-site-out validation on the original UCI files.
 
 ```mermaid
 flowchart LR
@@ -49,12 +48,12 @@ Accuracy cannot separate the strong models, so the contribution of the two-step 
 
 | Pathway | Equipment tests | Sick patients sent home | Left "not sure" |
 |---|---|---|---|
-| **Two-step system** (Step 1 release 95 %) | 521 | 2.9 | 332 |
+| Two-step system (Step 1 release 95 %) | 521 | 2.9 | 332 |
 | Fixed 0.5 cut-off at Step 1 | 317 | 10.9 | 0 |
 | Test everyone, forced 0.5 decision | 1,000 | 4.7 | 0 |
 | Test everyone, with the "not sure" band | 1,000 | 1.1 | 433 |
 
-**Where it fails:** the Step 1 cut-off does not transfer cleanly between hospitals (up to 11.3 % of sick patients sent home at one held-out site), and about one third of patients remain "not sure". Both are discussed in the paper (Sections 4.5 and 5).
+Where it fails: the Step 1 cut-off does not transfer cleanly between hospitals (up to 11.3 % of sick patients sent home at one held-out site), and about one third of patients remain "not sure". Both are discussed in the paper (Sections 4.5 and 5).
 
 ---
 
@@ -117,25 +116,25 @@ The PDF is produced from the .docx with LibreOffice (`soffice --headless --conve
 
 ## The application
 
-The Streamlit app asks only for the inputs of the current step, rejects implausible values and returns **Low risk**, **High risk** or **Not sure** with the estimated risk at the chosen prevalence. Step 1 uses five inputs from a basic clinic; Step 2 uses all 11 inputs and cholesterol can be marked as not measured. The sidebar sets the assumed prevalence and the Step 1 safety level.
+The Streamlit app asks only for the inputs of the current step, rejects implausible values and returns Low risk, High risk or Not sure with the estimated risk at the chosen prevalence. Step 1 uses five inputs from a basic clinic; Step 2 uses all 11 inputs and cholesterol can be marked as not measured. The sidebar sets the assumed prevalence and the Step 1 safety level.
 
 To host your own copy, use [Streamlit Community Cloud](https://share.streamlit.io): sign in with GitHub, choose this repository, branch `main`, main file `app/app.py`, Python 3.12. It installs `requirements.txt`, and the trained models in `app/models/` are part of the repository. GitHub Pages cannot run the app because it needs a Python server.
 
 ## Method in brief
 
-- **Protocol.** 3 x 10 stratified outer folds; 5-fold inner grid search on accuracy; one stratified 80/20 hold-out reported for comparison; seed 42. A unit test flips the test labels and checks that predictions do not change, which would expose leakage.
-- **Inputs.** Step 1: Age, Sex, ChestPainType, RestingBP, FastingBS. Step 2: all 11 inputs. Cholesterol is excluded from Step 1 because it raised the stacking AUROC by only 0.005 (rule fixed in advance: at least 0.01).
-- **Missing cholesterol.** All 172 zero-cholesterol rows come from two sites (Switzerland and VA Long Beach), so zero is treated as missing and imputed with the training-fold median at Step 2.
-- **Scorer.** Logistic-regression combiner on the logits of six classical models' inner out-of-fold probabilities (stacking), then Platt scaling, then prior-shift correction (Saerens et al., 2002).
-- **"Not sure" band.** Two cut-offs from out-of-fold scores: the lower cut-off releases at most a stated share of sick patients to "Low risk" (95 % at Step 1, 98 % at Step 2). A conformal (Mondrian) alternative is compared and the rule is chosen by a pre-specified criterion.
-- **Statistics.** Friedman test, corrected resampled t-test (Nadeau and Bengio), Wilcoxon signed-rank, Wilson intervals.
+- Protocol. 3 x 10 stratified outer folds; 5-fold inner grid search on accuracy; one stratified 80/20 hold-out reported for comparison; seed 42. A unit test flips the test labels and checks that predictions do not change, which would expose leakage.
+- Inputs. Step 1: Age, Sex, ChestPainType, RestingBP, FastingBS. Step 2: all 11 inputs. Cholesterol is excluded from Step 1 because it raised the stacking AUROC by only 0.005 (rule fixed in advance: at least 0.01).
+- Missing cholesterol. All 172 zero-cholesterol rows come from two sites (Switzerland and VA Long Beach), so zero is treated as missing and imputed with the training-fold median at Step 2.
+- Scorer. Logistic-regression combiner on the logits of six classical models' inner out-of-fold probabilities (stacking), then Platt scaling, then prior-shift correction (Saerens et al., 2002).
+- "Not sure" band. Two cut-offs from out-of-fold scores: the lower cut-off releases at most a stated share of sick patients to "Low risk" (95 % at Step 1, 98 % at Step 2). A conformal (Mondrian) alternative is compared and the rule is chosen by a pre-specified criterion.
+- Statistics. Friedman test, corrected resampled t-test (Nadeau and Bengio), Wilcoxon signed-rank, Wilson intervals.
 
 The full list of design decisions and the rules fixed before the results is in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ## Data
 
-- **Training data:** fedesoriano, *Heart Failure Prediction Dataset*, Kaggle (918 patients, 11 inputs, target `HeartDisease`): https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction
-- **Site validation:** UCI Machine Learning Repository, *Heart Disease* (Janosi, Steinbrunn, Pfisterer and Detrano), doi 10.24432/C52P4X. The four site files are in `external/`.
+- Training data: fedesoriano, *Heart Failure Prediction Dataset*, Kaggle (918 patients, 11 inputs, target `HeartDisease`): https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction
+- Site validation: UCI Machine Learning Repository, *Heart Disease* (Janosi, Steinbrunn, Pfisterer and Detrano), doi 10.24432/C52P4X. The four site files are in `external/`.
 
 ## Limitations
 
